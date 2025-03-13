@@ -1,6 +1,8 @@
 #pragma once
 
 #include <vector>
+#include <string>
+#include <CommCtrl.h>
 #include "thunker.h"
 
 namespace GuiHelpers
