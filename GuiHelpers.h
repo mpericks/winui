@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <CommCtrl.h>
+#include <functional>
 #include "thunker.h"
 
 namespace GuiHelpers
@@ -114,13 +115,18 @@ namespace GuiHelpers
    public:
       void RunMainApplicationLoop() ;
       void RunLocalLoopUntilEmpty() ;
+      void RunGameApplicationWithIdleCallback();
       void AddAcceleratorTable( HACCEL accelerator_handle ) ;
       void AddDialogWindow( HWND dialog_handle ) ;
       void RemoveDialogWindow( HWND dialog_handle ) ;
+      void SetGameIdleFunction(std::function<void(void)> idle_function);
+      bool HasGameIdleFunction();
    private:
       std::vector<HACCEL> accelerator_array ;
       std::vector<HWND> dialog_array ;
+      std::function<void(void)> m_idle_function;
    };
+
    class DefaultDialogFont
    {
    public:

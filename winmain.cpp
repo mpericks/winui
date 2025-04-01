@@ -36,7 +36,14 @@ int APIENTRY wWinMain(
    if( main_window.Handle() )
    {
       message_loop.AddDialogWindow( main_window.Handle() ) ;
-      message_loop.RunMainApplicationLoop() ;
+      if (message_loop.HasGameIdleFunction())
+      {
+          message_loop.RunGameApplicationWithIdleCallback();
+      }
+      else
+      {
+          message_loop.RunMainApplicationLoop();
+      }
    }
    ::CoUninitialize() ;
    return nRet;

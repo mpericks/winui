@@ -583,6 +583,60 @@ void GuiHelpers::MessageLoop::RunLocalLoopUntilEmpty()
    }
 }
 
+void GuiHelpers::MessageLoop::RunGameApplicationWithIdleCallback()
+{
+    if (!m_idle_function)
+    {
+        _RPTF0(_CRT_ERROR, L"no function stored in the idle callback in the message loop");
+        return;
+    }
+
+    bool bQuit = false;
+    while (!bQuit)
+    {
+        MSG msg;
+
+        while (::PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE))
+        {
+            if (msg.message == WM_QUIT)
+            {
+                bQuit = true;
+            }
+            bool accel_handled = false;
+            for (UINT i = 0; i < accelerator_array.size(); i++)
+            {
+                for (UINT win = 0; win < dialog_array.size(); win++)
+                {
+                    accel_handled |= ::TranslateAcceleratorW(dialog_array.at(win), accelerator_array[i], &msg) ? true : false;
+                }
+            }
+
+            bool dialog_handled = false;
+            for (UINT i = 0; i < dialog_array.size(); i++)
+            {
+                dialog_handled = ::IsDialogMessageW(dialog_array[i], &msg) ? true : false;
+            }
+
+            if (!accel_handled && !dialog_handled)
+            {
+                ::TranslateMessage(&msg);
+                ::DispatchMessageW(&msg);
+            }
+        }
+        m_idle_function();
+    }
+}
+
+void GuiHelpers::MessageLoop::SetGameIdleFunction(std::function<void(void)> idle_function)
+{
+    m_idle_function = idle_function;
+}
+
+bool GuiHelpers::MessageLoop::HasGameIdleFunction()
+{
+    return (bool)m_idle_function;
+}
+
 void GuiHelpers::MessageLoop::AddAcceleratorTable( HACCEL accelerator_handle )
 {
    std::vector<HACCEL>::const_iterator finder ;
