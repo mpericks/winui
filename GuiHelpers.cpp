@@ -549,17 +549,8 @@ void GuiHelpers::MessageLoop::RunLocalLoopUntilEmpty()
 {
    MSG msg ;
 
-   while ( ::PeekMessageW(&msg, NULL, 0, 0, PM_NOREMOVE ) )
+   while ( ::PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE ) )
    {
-      if ( msg.message == WM_QUIT )
-      {
-        break ;
-      }      
-      BOOL get_return = ::GetMessageW( &msg, NULL, 0, 0 ) ;
-      if ( -1 == get_return )
-      {
-        break ;
-      }
       bool accel_handled = false ;
       for ( UINT i = 0 ; i < accelerator_array.size() ; i++ )
       {
@@ -580,6 +571,10 @@ void GuiHelpers::MessageLoop::RunLocalLoopUntilEmpty()
          ::TranslateMessage(&msg);
          ::DispatchMessageW(&msg);
       }
+   }
+   if (HasGameIdleFunction())
+   {
+       m_idle_function();
    }
 }
 
