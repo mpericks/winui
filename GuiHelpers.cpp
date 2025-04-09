@@ -282,7 +282,7 @@ HWND GuiHelpers::CreateChildControl( const std::wstring& class_name, DWORD contr
 							   CW_USEDEFAULT, 
 							   CW_USEDEFAULT, 
 							   parent_handle, 
-							   (HMENU) control_id, 
+							   (HMENU)control_id, 
 							   ::GetModuleHandle( NULL ), 
 							   NULL 
 							   ) ;
@@ -574,7 +574,7 @@ void GuiHelpers::MessageLoop::RunLocalLoopUntilEmpty()
    }
    if (HasGameIdleFunction())
    {
-       m_idle_function();
+       m_idle_function(msg.message == WM_QUIT);
    }
 }
 
@@ -587,7 +587,8 @@ void GuiHelpers::MessageLoop::RunGameApplicationWithIdleCallback()
     }
 
     bool bQuit = false;
-    while (!bQuit)
+    quit_request = false;
+    while (!bQuit && !quit_request)
     {
         MSG msg;
 
@@ -618,11 +619,14 @@ void GuiHelpers::MessageLoop::RunGameApplicationWithIdleCallback()
                 ::DispatchMessageW(&msg);
             }
         }
-        m_idle_function();
+        if (m_idle_function)
+        {
+            m_idle_function(bQuit || quit_request);
+        }
     }
 }
 
-void GuiHelpers::MessageLoop::SetGameIdleFunction(std::function<void(void)> idle_function)
+void GuiHelpers::MessageLoop::SetGameIdleFunction(std::function<void(bool)> idle_function)
 {
     m_idle_function = idle_function;
 }
@@ -630,6 +634,12 @@ void GuiHelpers::MessageLoop::SetGameIdleFunction(std::function<void(void)> idle
 bool GuiHelpers::MessageLoop::HasGameIdleFunction()
 {
     return (bool)m_idle_function;
+}
+
+void GuiHelpers::MessageLoop::Quit()
+{
+    quit_request = true;
+    PostQuitMessage(0);
 }
 
 void GuiHelpers::MessageLoop::AddAcceleratorTable( HACCEL accelerator_handle )

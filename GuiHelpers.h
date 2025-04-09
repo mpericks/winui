@@ -110,7 +110,7 @@ namespace GuiHelpers
    class MessageLoop
    {
    public:
-      MessageLoop() {};
+       MessageLoop() { quit_request = false; };
       ~MessageLoop() {};
    public:
       void RunMainApplicationLoop() ;
@@ -119,12 +119,14 @@ namespace GuiHelpers
       void AddAcceleratorTable( HACCEL accelerator_handle ) ;
       void AddDialogWindow( HWND dialog_handle ) ;
       void RemoveDialogWindow( HWND dialog_handle ) ;
-      void SetGameIdleFunction(std::function<void(void)> idle_function);
+      void SetGameIdleFunction(std::function<void(bool)> idle_function);
       bool HasGameIdleFunction();
+      void Quit();
    private:
       std::vector<HACCEL> accelerator_array ;
       std::vector<HWND> dialog_array ;
-      std::function<void(void)> m_idle_function;
+      std::function<void(bool)> m_idle_function;
+      bool quit_request;
    };
 
    class DefaultDialogFont
