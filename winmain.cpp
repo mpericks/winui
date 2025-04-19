@@ -35,7 +35,6 @@ int APIENTRY wWinMain(
 
    if( main_window.Handle() )
    {
-      message_loop.AddDialogWindow( main_window.Handle() ) ;
       if (message_loop.HasGameIdleFunction())
       {
           message_loop.RunGameApplicationWithIdleCallback();
