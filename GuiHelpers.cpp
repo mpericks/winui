@@ -592,7 +592,7 @@ void GuiHelpers::MessageLoop::RunGameApplicationWithIdleCallback()
     {
         MSG msg;
 
-        while (::PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE))
+        if (::PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE))
         {
             if (msg.message == WM_QUIT)
             {
